@@ -23,4 +23,10 @@ export const api = {
     return fetch(`${BASE}/upload`, { method: 'POST', body: form }).then(json);
   },
   exportPage: (pageId) => fetch(`${BASE}/export/${pageId}`, { method: 'POST' }).then(json),
+  importTemplate: (file, pageName) => {
+    const form = new FormData();
+    form.append('zip', file);
+    if (pageName) form.append('pageName', pageName);
+    return fetch(`${BASE}/templates/import`, { method: 'POST', body: form }).then(json);
+  },
 };

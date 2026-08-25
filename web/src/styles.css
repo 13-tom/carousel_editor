@@ -10,7 +10,9 @@ body {
 
 /* Page selector */
 .page-selector { max-width: 900px; margin: 60px auto; padding: 0 24px; }
-.page-selector h1 { font-size: 24px; margin-bottom: 24px; }
+.page-selector-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
+.page-selector-header h1 { font-size: 24px; margin: 0; }
+.primary-btn.small { width: auto; padding: 10px 16px; font-size: 13px; white-space: nowrap; }
 .page-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
 .page-card {
   text-align: left; padding: 20px; border-radius: 12px; border: 1px solid #ddd;

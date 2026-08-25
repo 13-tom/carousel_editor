@@ -39,11 +39,36 @@ npm run dev            # starts backend (port 4310) + editor UI (port 5173)
 
 Open http://localhost:5173.
 
-## Adding your real templates
+## Importing a template from a zip (in the browser)
+
+On the page picker, **+ Import template (.zip)** accepts a Claude Design
+canvas export (a `.dc.html` file, optionally alongside its `.image-slots.state.json`
+and `uploads/` folder, all zipped together). It automatically:
+
+- creates `templates/pages/<slug-of-the-deck-name>/` with a `page.json`,
+  one `slides/*.html` per artboard, and an `assets/` folder for any images
+  that were already placed in the design;
+- converts every `<image-slot>` into a click-to-upload image region, and any
+  slide with a video toggle into a click-to-upload looping-video region
+  (auto-marked `hasVideo` so it exports as MP4);
+- makes every heading/paragraph and standalone text label independently
+  clickable and draggable, while leaving inline accent-color spans (e.g. one
+  colored word in a headline) intact until you actually edit that block —
+  editing replaces it with plain text plus whatever single color you set
+  from the toolbar;
+- carries over the deck's Google Fonts automatically.
+
+This only understands `.dc.html` exports today — Canva/Figma files aren't
+supported (see below for why). If a design element already had an image
+placed in it in the source file, that image ships as the slide's default —
+check slide 1 (and any other image slots) after importing, since anything
+that was a placeholder/test image in the original design comes along too.
+
+## Adding templates by hand
 
 This ships with one demo page (two slides + one video CTA slide) so you can
-see the whole flow working immediately. To add one of your real Instagram
-pages:
+see the whole flow working immediately without importing anything. To add a
+page by hand instead of importing:
 
 1. Duplicate `templates/pages/demo-page` as `templates/pages/<your-page-id>`.
 2. Edit `page.json` — set `name`, `theme` (`minimal` or `bold`, or a new
@@ -63,12 +88,11 @@ pages:
 4. Adjust `layout.css` for exact positions/sizes (this is separate from
    `theme.css` so the same layout can be reused across themes).
 
-**Sending me your actual designs:** the cleanest path is HTML/CSS — e.g. a
-Claude Design export, or any hand-coded HTML for your current slides. I can
-map that directly onto this `data-edit` structure. Canva doesn't export
-editable layered source, so that's a dead end; Figma would need an extra
-conversion step. HTML is the native format for a browser-based editor, so
-it needs the least translation.
+HTML/CSS is the native format for a browser-based editor, so it needs the
+least translation — a Claude Design export (importable directly, see above)
+or hand-coded HTML both map cleanly onto the `data-edit` structure. Canva
+doesn't export editable layered source, so that's a dead end; Figma would
+need an extra conversion step, which isn't built yet.
 
 Adding a new **theme**: create `templates/themes/<id>/theme.css` (+ optional
 `meta.json` with a display name) using the same class names your layouts

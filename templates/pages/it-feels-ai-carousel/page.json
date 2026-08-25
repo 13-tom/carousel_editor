@@ -1,0 +1,71 @@
+{
+  "id": "it-feels-ai-carousel",
+  "name": "It Feels AI Carousel",
+  "theme": "blank",
+  "canvas": {
+    "width": 1080,
+    "height": 1350
+  },
+  "fonts": [
+    "https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap"
+  ],
+  "slides": [
+    {
+      "id": "slide-1",
+      "file": "slides/slide-1.html",
+      "label": "Cover"
+    },
+    {
+      "id": "slide-2",
+      "file": "slides/slide-2.html",
+      "label": "Full-bleed + text"
+    },
+    {
+      "id": "slide-3",
+      "file": "slides/slide-3.html",
+      "label": "Horizontal video",
+      "hasVideo": true
+    },
+    {
+      "id": "slide-4",
+      "file": "slides/slide-4.html",
+      "label": "Vertical video",
+      "hasVideo": true
+    },
+    {
+      "id": "slide-5",
+      "file": "slides/slide-5.html",
+      "label": "Terminal"
+    },
+    {
+      "id": "slide-6",
+      "file": "slides/slide-6.html",
+      "label": "Statement"
+    },
+    {
+      "id": "slide-7",
+      "file": "slides/slide-7.html",
+      "label": "Data / stats"
+    },
+    {
+      "id": "slide-8",
+      "file": "slides/slide-8.html",
+      "label": "List"
+    },
+    {
+      "id": "slide-9",
+      "file": "slides/slide-9.html",
+      "label": "Comparison"
+    },
+    {
+      "id": "slide-10",
+      "file": "slides/slide-10.html",
+      "label": "Quote"
+    },
+    {
+      "id": "slide-11",
+      "file": "slides/slide-11.html",
+      "label": "CTA"
+    }
+  ]
+}

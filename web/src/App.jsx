@@ -29,6 +29,7 @@ export default function App() {
   useEffect(() => {
     if (!pageId) return;
     const p = pages.find((pg) => pg.id === pageId);
+    if (!p) return;
     setPage(p);
     setSlideId(p.slides[0].id);
     api.getProject(pageId).then((proj) => {
@@ -87,7 +88,7 @@ export default function App() {
   }
 
   if (!pageId || !page || !project || !slideId) {
-    return <PageSelector pages={pages} onSelect={setPageId} />;
+    return <PageSelector pages={pages} onSelect={setPageId} onImported={() => api.listPages().then(setPages)} />;
   }
 
   const currentSlideOverrides = project.slides[slideId] || {};
