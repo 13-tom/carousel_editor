@@ -115,21 +115,21 @@ function convertImageSlot($, el, slotState, pageId, assetsDir, keyCounter) {
   if (needsFill) decls.push('position: absolute', 'inset: 0');
   if (shape === 'circle') decls.push('border-radius: 50%');
   else if (shape === 'rounded' && radius) decls.push(`border-radius: ${radius}px`);
-  if (fit === 'contain') decls.push('background-size: contain');
 
-  let bgDecl = '';
   let hasAsset = false;
+  let assetFilename = null;
   if (slotState[id]?.u) {
-    const filename = saveDataUriAsset(slotState[id].u, assetsDir, id);
-    if (filename) {
-      bgDecl = `background-image: url('${assetUrl(pageId, filename)}');`;
-      hasAsset = true;
-    }
+    assetFilename = saveDataUriAsset(slotState[id].u, assetsDir, id);
+    hasAsset = !!assetFilename;
   }
 
   const $replacement = $(`<div class="image-slot-imported" data-edit="image" data-key="${id}"></div>`);
-  $replacement.attr('style', `${ownStyle}; ${decls.join('; ')}; ${bgDecl}`);
-  if (!hasAsset) {
+  $replacement.attr('style', `${ownStyle}; ${decls.join('; ')};`);
+  if (hasAsset) {
+    const $img = $('<img class="slot-img">').attr('src', assetUrl(pageId, assetFilename));
+    if (fit === 'contain') $img.attr('style', 'object-fit: contain;');
+    $replacement.append($img);
+  } else {
     $replacement.append($('<span class="image-slot-label"></span>').text(placeholder));
   }
   $el.replaceWith($replacement);

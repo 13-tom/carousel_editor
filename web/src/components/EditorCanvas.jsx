@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 const DISPLAY_WIDTH = 420;
 
-export default function EditorCanvas({ pageId, slideId, topic, canvas, onSelect, onTextChange, onMove, onResize, onRequestUpload, registerPost }) {
+export default function EditorCanvas({ pageId, slideId, topic, canvas, onSelect, onTextChange, onMove, onResize, onCrop, onRequestUpload, registerPost }) {
   const iframeRef = useRef(null);
   const scale = DISPLAY_WIDTH / canvas.width;
   const displayHeight = canvas.height * scale;
@@ -28,7 +28,10 @@ export default function EditorCanvas({ pageId, slideId, topic, canvas, onSelect,
           onMove(msg.key, msg.x, msg.y);
           break;
         case 'resize':
-          onResize(msg.key, msg.width, msg.height);
+          onResize(msg.key, msg.width, msg.height, msg.top, msg.left);
+          break;
+        case 'crop-pan':
+          onCrop(msg.key, { x: msg.x, y: msg.y, scale: msg.scale });
           break;
         case 'request-image':
         case 'request-video':
@@ -40,7 +43,7 @@ export default function EditorCanvas({ pageId, slideId, topic, canvas, onSelect,
     }
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [onSelect, onTextChange, onMove, onResize, onRequestUpload]);
+  }, [onSelect, onTextChange, onMove, onResize, onCrop, onRequestUpload]);
 
   const topicParam = topic ? `&topic=${encodeURIComponent(topic)}` : '';
 

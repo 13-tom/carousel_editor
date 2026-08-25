@@ -20,6 +20,7 @@ export default function App() {
   const [project, setProject] = useState(null);
   const [slideId, setSlideId] = useState(null);
   const [selected, setSelected] = useState(null); // { key, editType }
+  const [cropKey, setCropKey] = useState(null);
   const fileInputRef = useRef(null);
   const pendingUploadKey = useRef(null);
   const pendingMediaRef = useRef(null);
@@ -47,7 +48,13 @@ export default function App() {
       setProject(withDefaults);
     });
     setSelected(null);
+    setCropKey(null);
   }, [pageId, topic, pages]);
+
+  function selectElement(next) {
+    setSelected(next);
+    if (cropKey && next?.key !== cropKey) setCropKey(null);
+  }
 
   function selectPage(id) {
     setPageId(id);
@@ -89,10 +96,30 @@ export default function App() {
     });
   }
 
-  function handleResize(key, width, height) {
+  function handleResize(key, width, height, top, left) {
     updateSlide((slide) => {
-      slide.styles = { ...slide.styles, [key]: { ...slide.styles[key], width, height } };
+      slide.styles = { ...slide.styles, [key]: { ...slide.styles[key], width, height, top, left } };
     });
+  }
+
+  function handleCrop(key, crop) {
+    updateSlide((slide) => {
+      slide.styles = { ...slide.styles, [key]: { ...slide.styles[key], crop } };
+    });
+  }
+
+  function toggleCrop(key) {
+    const next = cropKey === key ? null : key;
+    if (cropKey) postToCanvasRef.current({ type: 'set-crop-mode', key: cropKey, active: false });
+    if (next) postToCanvasRef.current({ type: 'set-crop-mode', key: next, active: true });
+    setCropKey(next);
+  }
+
+  function setCropZoom(key, scale) {
+    const current = project.slides[slideId]?.styles?.[key]?.crop || { x: 0, y: 0, scale: 1 };
+    const crop = { ...current, scale };
+    handleCrop(key, crop);
+    postToCanvasRef.current({ type: 'apply-crop', key, ...crop });
   }
 
   function handleStyle(key, patch) {
@@ -153,11 +180,20 @@ export default function App() {
         <span className="theme-badge">{page.theme}</span>
       </header>
       <div className="app-body">
-        <SlideThumbnails slides={page.slides} currentId={slideId} onSelect={setSlideId} />
+        <SlideThumbnails
+          slides={page.slides}
+          currentId={slideId}
+          onSelect={(id) => {
+            setSlideId(id);
+            setSelected(null);
+            setCropKey(null);
+          }}
+        />
         <div className="canvas-column">
           <Toolbar
             selected={selected}
             style={currentStyle}
+            cropActive={cropKey === selected?.key}
             onColor={(color) => {
               handleStyle(selected.key, { color });
               postToCanvasRef.current({ type: 'apply-style', key: selected.key, color });
@@ -166,16 +202,19 @@ export default function App() {
               handleStyle(selected.key, { textAlign });
               postToCanvasRef.current({ type: 'apply-style', key: selected.key, textAlign });
             }}
+            onToggleCrop={() => toggleCrop(selected.key)}
+            onZoom={(scale) => setCropZoom(selected.key, scale)}
           />
           <EditorCanvas
             pageId={pageId}
             slideId={slideId}
             topic={topic}
             canvas={page.canvas}
-            onSelect={setSelected}
+            onSelect={selectElement}
             onTextChange={handleTextChange}
             onMove={handleMove}
             onResize={handleResize}
+            onCrop={handleCrop}
             onRequestUpload={requestUpload}
             registerPost={(fn) => (postToCanvasRef.current = fn)}
           />

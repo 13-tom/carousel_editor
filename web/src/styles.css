@@ -56,6 +56,11 @@ body {
   border: 1px solid #ddd; background: #fff; padding: 6px 10px; cursor: pointer; font-size: 13px;
 }
 .align-group button.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+.crop-toggle {
+  border: 1px solid #ddd; background: #fff; padding: 6px 12px; border-radius: 6px;
+  cursor: pointer; font-size: 13px; font: inherit;
+}
+.crop-toggle.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
 .canvas-wrapper { box-shadow: 0 4px 24px rgba(0,0,0,0.12); overflow: hidden; border-radius: 4px; }
 
 /* Export panel */

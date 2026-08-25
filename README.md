@@ -159,9 +159,14 @@ by accident:
 - Select a text element to get font-color and left/center/right alignment
   controls in the toolbar, and drag it to reposition it.
 - Click an image or video area to pick a replacement file from your computer.
-- Drag an image's corner handle to resize its frame (anchored from its
-  top-left corner). Images themselves aren't draggable — only resizable and
-  replaceable — so a layout can't drift out of place slide to slide.
+- Drag any of the 8 handles around an image/video (4 corners + 4 edges) to
+  resize its frame from that side — the opposite side stays put, same as
+  Canva. Images/videos themselves aren't freely draggable — only resizable
+  and replaceable — so a layout can't drift out of place slide to slide.
+- Select an image or video and click **Crop** to reposition/zoom the photo
+  or video *within* its frame (drag to pan, slider to zoom) without
+  changing the frame's size or position — for fixing a bad crop on an
+  upload, not for moving the frame itself. Click **Done cropping** to exit.
 - There's no font-family control anywhere, on purpose.
 - Icon+label chrome the importer recognizes automatically — a "swipe for
   more" cue, an @handle lockup — is excluded from editing entirely, so it
