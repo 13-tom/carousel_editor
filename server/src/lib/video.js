@@ -22,6 +22,10 @@ function run(bin, args) {
  * overlay PNG into a single MP4, cropped/scaled to fill the canvas.
  */
 export async function composeVideoSlide({ backgroundVideoPath, overlayPngBuffer, canvas, outputPath }) {
+  if (!fs.existsSync(backgroundVideoPath)) {
+    throw new Error(`Background video not found on disk: ${backgroundVideoPath}`);
+  }
+
   const tmpOverlay = path.join(os.tmpdir(), `overlay-${Date.now()}-${Math.random().toString(36).slice(2)}.png`);
   fs.writeFileSync(tmpOverlay, overlayPngBuffer);
 

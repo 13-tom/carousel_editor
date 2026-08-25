@@ -12,7 +12,11 @@ import { config } from '../lib/config.js';
 export const exportRouter = express.Router();
 
 function uploadUrlToPath(url) {
-  return path.join(config.paths.uploads, path.basename(url));
+  // url is "/uploads/<rest, possibly with page/date/topic subfolders>" —
+  // keep the whole relative path, not just the basename, or an upload
+  // saved into a structured folder can never be found again.
+  const relPath = decodeURIComponent(url.replace(/^\/uploads\//, ''));
+  return path.join(config.paths.uploads, ...relPath.split('/'));
 }
 
 exportRouter.post('/export/:pageId', async (req, res) => {
