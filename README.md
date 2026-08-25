@@ -31,9 +31,8 @@ Requirements: Node.js 18+, and for video export, **ffmpeg** on your PATH
 download a build for Windows and add it to PATH).
 
 ```bash
-npm run install:all   # installs server + web dependencies
-npx playwright install chromium --prefix server  # downloads the headless
-                                                   # browser used for PNG export
+npm run install:all   # installs root + server + web dependencies, and
+                       # downloads the headless Chromium PNG export uses
 npm run dev            # starts backend (port 4310) + editor UI (port 5173)
 ```
 
@@ -47,7 +46,6 @@ everything as a single process on one port:
 
 ```bash
 npm run install:all
-npx playwright install chromium --prefix server
 AUTH_USERNAME=youruser AUTH_PASSWORD=your-strong-password npm start
 ```
 
