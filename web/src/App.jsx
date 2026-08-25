@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from './api.js';
 import PageSelector from './components/PageSelector.jsx';
+import TopicPicker from './components/TopicPicker.jsx';
 import SlideThumbnails from './components/SlideThumbnails.jsx';
 import EditorCanvas from './components/EditorCanvas.jsx';
 import Toolbar from './components/Toolbar.jsx';
+import MediaLibrary from './components/MediaLibrary.jsx';
 import ExportPanel from './components/ExportPanel.jsx';
 
 function withSlideDefaults(project, slideId) {
@@ -14,31 +16,55 @@ function withSlideDefaults(project, slideId) {
 export default function App() {
   const [pages, setPages] = useState([]);
   const [pageId, setPageId] = useState(null);
-  const [page, setPage] = useState(null);
+  const [topic, setTopic] = useState(undefined); // undefined = not chosen yet, null = explicit "untitled"
   const [project, setProject] = useState(null);
   const [slideId, setSlideId] = useState(null);
   const [selected, setSelected] = useState(null); // { key, editType }
   const fileInputRef = useRef(null);
   const pendingUploadKey = useRef(null);
+  const pendingMediaRef = useRef(null);
   const postToCanvasRef = useRef(() => {});
 
   useEffect(() => {
     api.listPages().then(setPages);
   }, []);
 
+  const page = pageId ? pages.find((pg) => pg.id === pageId) : null;
+
   useEffect(() => {
-    if (!pageId) return;
-    const p = pages.find((pg) => pg.id === pageId);
-    if (!p) return;
-    setPage(p);
+    if (!page || topic === undefined) return;
+    const p = page;
     setSlideId(p.slides[0].id);
-    api.getProject(pageId).then((proj) => {
+    api.getProject(pageId, topic).then((proj) => {
       let withDefaults = proj;
       for (const s of p.slides) withDefaults = withSlideDefaults(withDefaults, s.id);
+      const pendingMedia = pendingMediaRef.current;
+      pendingMediaRef.current = null;
+      if (pendingMedia?.length) {
+        withDefaults = { ...withDefaults, mediaLibrary: [...(withDefaults.mediaLibrary || []), ...pendingMedia] };
+        api.saveProject(pageId, withDefaults, topic).catch(console.error);
+      }
       setProject(withDefaults);
     });
     setSelected(null);
-  }, [pageId, pages]);
+  }, [pageId, topic, pages]);
+
+  function selectPage(id) {
+    setPageId(id);
+    setTopic(undefined);
+    setProject(null);
+  }
+
+  function backToPages() {
+    setPageId(null);
+    setTopic(undefined);
+    setProject(null);
+  }
+
+  function confirmTopic(topicName, mediaUrls) {
+    pendingMediaRef.current = mediaUrls;
+    setTopic(topicName);
+  }
 
   function updateSlide(mutator) {
     setProject((prev) => {
@@ -46,7 +72,7 @@ export default function App() {
       const slide = { ...next.slides[slideId] };
       mutator(slide);
       const updated = { ...next, slides: { ...next.slides, [slideId]: slide } };
-      api.saveProject(pageId, updated).catch(console.error);
+      api.saveProject(pageId, updated, topic).catch(console.error);
       return updated;
     });
   }
@@ -80,21 +106,39 @@ export default function App() {
     fileInputRef.current?.click();
   }
 
+  function assignImage(key, url) {
+    updateSlide((slide) => {
+      slide.images = { ...slide.images, [key]: url };
+    });
+    postToCanvasRef.current({ type: 'set-image', key, url });
+  }
+
   async function handleFileChosen(e) {
     const file = e.target.files[0];
     e.target.value = '';
     if (!file || !selected) return;
     const key = pendingUploadKey.current;
-    const { url } = await api.upload(file);
-    const kind = selected.editType === 'video' ? 'videos' : 'images';
-    updateSlide((slide) => {
-      slide[kind] = { ...slide[kind], [key]: url };
-    });
-    postToCanvasRef.current({ type: selected.editType === 'video' ? 'set-video' : 'set-image', key, url });
+    const { url } = await api.upload(file, { pageName: page.name, topic });
+    if (selected.editType === 'video') {
+      updateSlide((slide) => {
+        slide.videos = { ...slide.videos, [key]: url };
+      });
+      postToCanvasRef.current({ type: 'set-video', key, url });
+    } else {
+      assignImage(key, url);
+    }
   }
 
-  if (!pageId || !page || !project || !slideId) {
-    return <PageSelector pages={pages} onSelect={setPageId} onImported={() => api.listPages().then(setPages)} />;
+  if (!pageId || !page) {
+    return <PageSelector pages={pages} onSelect={selectPage} onImported={() => api.listPages().then(setPages)} />;
+  }
+
+  if (topic === undefined) {
+    return <TopicPicker page={page} onConfirm={confirmTopic} onBack={backToPages} />;
+  }
+
+  if (!project || !slideId) {
+    return null;
   }
 
   const currentSlideOverrides = project.slides[slideId] || {};
@@ -103,8 +147,9 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <button className="link-btn" onClick={() => setPageId(null)}>← Pages</button>
+        <button className="link-btn" onClick={backToPages}>← Pages</button>
         <h1>{page.name}</h1>
+        {topic && <span className="theme-badge">{topic}</span>}
         <span className="theme-badge">{page.theme}</span>
       </header>
       <div className="app-body">
@@ -125,6 +170,7 @@ export default function App() {
           <EditorCanvas
             pageId={pageId}
             slideId={slideId}
+            topic={topic}
             canvas={page.canvas}
             onSelect={setSelected}
             onTextChange={handleTextChange}
@@ -133,8 +179,9 @@ export default function App() {
             onRequestUpload={requestUpload}
             registerPost={(fn) => (postToCanvasRef.current = fn)}
           />
+          <MediaLibrary items={project.mediaLibrary} selected={selected} onAssign={(url) => assignImage(selected.key, url)} />
         </div>
-        <ExportPanel pageId={pageId} />
+        <ExportPanel pageId={pageId} topic={topic} />
       </div>
       <input ref={fileInputRef} type="file" accept="image/*,video/mp4,video/quicktime,video/webm" style={{ display: 'none' }} onChange={handleFileChosen} />
     </div>

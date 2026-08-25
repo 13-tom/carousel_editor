@@ -127,6 +127,29 @@ Adding a new **theme**: create `templates/themes/<id>/theme.css` (+ optional
 already reference (`.headline`, `.body`, `.eyebrow`, `.cta`, `.page-number`,
 etc.). Any page can then switch to it by changing `theme` in its `page.json`.
 
+## Topics: one page, many carousels
+
+Picking a page doesn't drop you straight into the editor — it first asks
+which **topic** (carousel) you're working on. A page like "Deliveries" can
+have many topics over time ("OpenAI news roundup" today, something else
+next week), each saved separately and switchable later; picking one loads
+exactly where you left it, including whatever photos you'd uploaded for it.
+
+Starting a new topic gives you an upfront **batch upload** — drop in all
+the source photos for this carousel at once, before you touch a single
+slide. They land immediately in the structured folder below, and show up
+in a media library strip under the canvas: select an image slot, click a
+photo there, done — no re-uploading the same photo per slide. You can still
+upload one-off per slide the normal way too.
+
+This is also the folder hierarchy uploads and exports both use, so
+everything for one carousel ends up in the same place:
+
+```
+uploads/<Page Name>/<YYYY-MM-DD>/<Topic>/photo1.jpg
+exports/<Page Name>/<YYYY-MM-DD>/<Topic>/slide-1.png
+```
+
 ## Editing controls
 
 This is deliberately not a full design tool — it only exposes what's needed
@@ -148,24 +171,28 @@ by accident:
   the same way: remove its `data-edit`/`data-key` attributes in the slide's
   HTML file.)
 
-Edits autosave to `data/projects/<page-id>.json` on every change — **the
-original template files under `templates/pages/` are never modified**, by
-editing or by exporting. Every render merges the template with that
+Edits autosave to `data/projects/<page-id>--<topic>.json` on every change —
+**the original template files under `templates/pages/` are never modified**,
+by editing or by exporting. Every render merges the template with that
 separate override file on the fly, so re-editing a page always starts from
-the same clean template, and a template can be reused by as many dated
-exports as you want without ever drifting.
+the same clean template, and a template can be reused by as many topics and
+dated exports as you want without ever drifting.
 
 ## Export
 
 Click **Export carousel**. Each slide renders as PNG, except slides with a
 video background (marked `hasVideo` + one uploaded), which render as MP4 —
-the looping video with your text/graphics burned in on top.
+the looping video with your text/graphics burned in on top. PNG capture is
+lossless by construction (a raw pixel buffer at the slide's exact
+resolution). MP4 quality is set explicitly (`config.video.crf`/`preset`,
+16/slow by default) rather than left at ffmpeg's default, since that
+default is noticeably lower quality than what a real export should be.
 
 By default (`export.mode: "local-folder"` in `config/config.json`) files are
-written to `exports/<Page Name>/<YYYY-MM-DD>/`. If you also set
+written to `exports/<Page Name>/<YYYY-MM-DD>/<Topic>/`. If you also set
 `export.localFolder.dropboxPath` to your local Dropbox folder (e.g.
 `/Users/you/Dropbox`), exports are additionally copied to
-`<dropboxPath>/<Page Name>/Carousel/<YYYY-MM-DD>/` and your existing Dropbox
+`<dropboxPath>/<Page Name>/<YYYY-MM-DD>/<Topic>/` and your existing Dropbox
 desktop app syncs them automatically — no API keys needed.
 
 **Later, when hosting this on a VPS** (no Dropbox desktop client running),

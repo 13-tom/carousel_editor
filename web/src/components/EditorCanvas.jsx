@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 const DISPLAY_WIDTH = 420;
 
-export default function EditorCanvas({ pageId, slideId, canvas, onSelect, onTextChange, onMove, onResize, onRequestUpload, registerPost }) {
+export default function EditorCanvas({ pageId, slideId, topic, canvas, onSelect, onTextChange, onMove, onResize, onRequestUpload, registerPost }) {
   const iframeRef = useRef(null);
   const scale = DISPLAY_WIDTH / canvas.width;
   const displayHeight = canvas.height * scale;
@@ -42,13 +42,15 @@ export default function EditorCanvas({ pageId, slideId, canvas, onSelect, onText
     return () => window.removeEventListener('message', handleMessage);
   }, [onSelect, onTextChange, onMove, onResize, onRequestUpload]);
 
+  const topicParam = topic ? `&topic=${encodeURIComponent(topic)}` : '';
+
   return (
     <div className="canvas-wrapper" style={{ width: DISPLAY_WIDTH, height: displayHeight }}>
       <iframe
-        key={`${pageId}-${slideId}`}
+        key={`${pageId}-${slideId}-${topic || ''}`}
         ref={iframeRef}
         title="slide"
-        src={`/api/render/${pageId}/${slideId}?mode=editor`}
+        src={`/api/render/${pageId}/${slideId}?mode=editor${topicParam}`}
         width={canvas.width}
         height={canvas.height}
         style={{ transform: `scale(${scale})`, transformOrigin: 'top left', border: 'none' }}

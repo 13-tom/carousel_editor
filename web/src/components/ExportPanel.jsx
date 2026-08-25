@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { api } from '../api.js';
 
-export default function ExportPanel({ pageId }) {
+export default function ExportPanel({ pageId, topic }) {
   const [status, setStatus] = useState(null); // { state: 'loading'|'done'|'error', ... }
 
   async function handleExport() {
     setStatus({ state: 'loading' });
     try {
-      const result = await api.exportPage(pageId);
+      const result = await api.exportPage(pageId, topic);
       setStatus({ state: 'done', result });
     } catch (err) {
       setStatus({ state: 'error', message: err.message });

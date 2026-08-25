@@ -27,12 +27,13 @@ export async function closeBrowser() {
  * @param {boolean} opts.transparentVideo - hide video layer + force transparent
  *   background, used to produce the text/graphics overlay burned onto a video export.
  */
-export async function renderSlidePng(pageId, slideId, canvas, { transparentVideo = false } = {}) {
+export async function renderSlidePng(pageId, slideId, canvas, { transparentVideo = false, topic = '' } = {}) {
   const browser = await getBrowser();
   const page = await browser.newPage({ viewport: { width: canvas.width, height: canvas.height } });
   try {
     const query = new URLSearchParams({ mode: 'export' });
     if (transparentVideo) query.set('transparentVideo', '1');
+    if (topic) query.set('topic', topic);
     const url = `http://localhost:${config.server.port}/api/render/${pageId}/${slideId}?${query}`;
     await page.goto(url, { waitUntil: 'networkidle' });
     return await page.screenshot({ type: 'png', omitBackground: transparentVideo });

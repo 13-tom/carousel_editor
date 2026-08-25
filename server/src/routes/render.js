@@ -6,7 +6,7 @@ export const renderRouter = express.Router();
 
 renderRouter.get('/render/:pageId/:slideId', (req, res) => {
   try {
-    const overrides = getSlideOverrides(req.params.pageId, req.params.slideId);
+    const overrides = getSlideOverrides(req.params.pageId, req.params.slideId, req.query.topic);
     const mode = req.query.mode === 'export' ? 'export' : 'editor';
     let html = renderSlideDocument(req.params.pageId, req.params.slideId, { overrides, mode });
     if (req.query.transparentVideo === '1') {

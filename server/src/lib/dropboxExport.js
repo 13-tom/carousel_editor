@@ -1,26 +1,24 @@
 import fs from 'fs';
 import path from 'path';
 import { config } from './config.js';
+import { safeSegment, todayFolder } from './naming.js';
 
-function dateFolder(date = new Date()) {
-  return date.toISOString().slice(0, 10); // YYYY-MM-DD
-}
-
-function safeName(name) {
-  return String(name).replace(/[^a-zA-Z0-9-_ ]/g, '').trim() || 'page';
+function destSegments(pageName, topic, date) {
+  const segments = [safeSegment(pageName), todayFolder(date)];
+  if (topic) segments.push(safeSegment(topic));
+  return segments;
 }
 
 /**
- * Writes exported files to disk under exports/<pageName>/<date>/, and — if
- * export.mode is 'local-folder' and a dropboxPath is configured and exists
- * on disk (i.e. the Dropbox desktop app is installed and syncing) — also
- * copies them into <dropboxPath>/<pageName>/Carousel/<date>/ so the
- * existing Dropbox client picks them up and syncs automatically.
+ * Writes exported files to disk under exports/<pageName>/<date>/<topic>/,
+ * and — if export.mode is 'local-folder' and a dropboxPath is configured
+ * and exists on disk (i.e. the Dropbox desktop app is installed and
+ * syncing) — also copies them into <dropboxPath>/<pageName>/<date>/<topic>/
+ * so the existing Dropbox client picks them up and syncs automatically.
  */
-export async function exportLocalAndMaybeDropbox(pageName, files, date = new Date()) {
-  const folder = dateFolder(date);
-  const pageDir = safeName(pageName);
-  const localDir = path.join(config.paths.exports, pageDir, folder);
+export async function exportLocalAndMaybeDropbox(pageName, files, { topic, date = new Date() } = {}) {
+  const segments = destSegments(pageName, topic, date);
+  const localDir = path.join(config.paths.exports, ...segments);
   fs.mkdirSync(localDir, { recursive: true });
 
   const written = [];
@@ -33,7 +31,7 @@ export async function exportLocalAndMaybeDropbox(pageName, files, date = new Dat
   let dropboxCopied = false;
   const dropboxRoot = config.export.localFolder.dropboxPath;
   if (dropboxRoot && fs.existsSync(dropboxRoot)) {
-    const dropboxDir = path.join(dropboxRoot, pageDir, 'Carousel', folder);
+    const dropboxDir = path.join(dropboxRoot, ...segments);
     fs.mkdirSync(dropboxDir, { recursive: true });
     for (const file of files) {
       fs.copyFileSync(path.join(localDir, file.filename), path.join(dropboxDir, file.filename));
@@ -49,20 +47,19 @@ export async function exportLocalAndMaybeDropbox(pageName, files, date = new Dat
  * without the Dropbox desktop client (e.g. a VPS). Requires the `dropbox`
  * package and a DROPBOX_ACCESS_TOKEN env var.
  */
-export async function exportViaDropboxApi(pageName, files, date = new Date()) {
+export async function exportViaDropboxApi(pageName, files, { topic, date = new Date() } = {}) {
   if (!config.dropboxAccessToken) {
     throw new Error('DROPBOX_ACCESS_TOKEN is not set. Required for export.mode = "dropbox-api".');
   }
   const { Dropbox } = await import('dropbox');
   const dbx = new Dropbox({ accessToken: config.dropboxAccessToken, fetch });
 
-  const folder = dateFolder(date);
-  const pageDir = safeName(pageName);
+  const segments = destSegments(pageName, topic, date);
   const root = config.export.dropboxApi.destinationRoot.replace(/\/+$/, '');
   const uploaded = [];
 
   for (const file of files) {
-    const dropboxPath = `${root}/${pageDir}/Carousel/${folder}/${file.filename}`;
+    const dropboxPath = `${root}/${segments.join('/')}/${file.filename}`;
     await dbx.filesUpload({ path: dropboxPath, contents: file.buffer, mode: { '.tag': 'overwrite' } });
     uploaded.push(dropboxPath);
   }
@@ -70,9 +67,9 @@ export async function exportViaDropboxApi(pageName, files, date = new Date()) {
   return { uploaded };
 }
 
-export async function exportFiles(pageName, files, date = new Date()) {
+export async function exportFiles(pageName, files, opts = {}) {
   if (config.export.mode === 'dropbox-api') {
-    return { mode: 'dropbox-api', ...(await exportViaDropboxApi(pageName, files, date)) };
+    return { mode: 'dropbox-api', ...(await exportViaDropboxApi(pageName, files, opts)) };
   }
-  return { mode: 'local-folder', ...(await exportLocalAndMaybeDropbox(pageName, files, date)) };
+  return { mode: 'local-folder', ...(await exportLocalAndMaybeDropbox(pageName, files, opts)) };
 }

@@ -27,8 +27,10 @@
   },
 
   "video": {
-    "_comment": "ffmpeg must be installed and on PATH (brew install ffmpeg / apt install ffmpeg), or point ffmpegPath at a binary directly.",
+    "_comment": "ffmpeg must be installed and on PATH (brew install ffmpeg / apt install ffmpeg), or point ffmpegPath at a binary directly. crf is x264's quality dial: lower = higher quality + bigger file. 16 is visually lossless for this kind of content; 0 is mathematically lossless (very large files) if you ever want an archival master before a platform re-compresses it anyway.",
     "ffmpegPath": "ffmpeg",
-    "loopSeconds": 6
+    "loopSeconds": 6,
+    "crf": 16,
+    "preset": "slow"
   }
 }
