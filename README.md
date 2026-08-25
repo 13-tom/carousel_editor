@@ -39,6 +39,34 @@ npm run dev            # starts backend (port 4310) + editor UI (port 5173)
 
 Open http://localhost:5173.
 
+## Deploying to a server (e.g. a cloud VM)
+
+Local dev runs two processes (Vite dev server + backend) on two ports.
+For a real server, build the frontend once and let the backend serve
+everything as a single process on one port:
+
+```bash
+npm run install:all
+npx playwright install chromium --prefix server
+AUTH_USERNAME=youruser AUTH_PASSWORD=your-strong-password npm start
+```
+
+`npm start` builds the frontend (`web/dist`) and starts the backend, which
+serves both the UI and the API on `config.server.port` (4310 by default).
+Put this behind a process manager (`pm2 start npm -- start`, or a systemd
+unit) so it survives reboots and restarts on crash.
+
+**Set `AUTH_USERNAME` and `AUTH_PASSWORD` any time this is reachable from
+outside your own machine.** With both set, every request requires an HTTP
+Basic Auth login (your browser will just prompt once); with either unset,
+there's no login at all — fine on localhost, not fine on a public IP.
+Never commit these to a file — set them as real environment variables (or
+in your process manager's env config) on the server itself.
+
+Also switch `export.mode` to `"dropbox-api"` in `config/config.json` (see
+Export, below) once there's no local Dropbox desktop client to sync a
+folder — that only works on your own machine.
+
 ## Importing a template from a zip (in the browser)
 
 On the page picker, **+ Import template (.zip)** accepts a Claude Design

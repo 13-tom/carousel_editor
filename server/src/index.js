@@ -10,16 +10,20 @@ import { uploadRouter } from './routes/upload.js';
 import { exportRouter } from './routes/export.js';
 import { templatesRouter } from './routes/templates.js';
 import { closeBrowser } from './lib/screenshot.js';
+import { basicAuth } from './lib/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const webDist = path.join(config.paths.root, 'web/dist');
 
 const app = express();
 app.use(cors());
+app.use(basicAuth);
 app.use(express.json({ limit: '10mb' }));
 
 app.use('/uploads', express.static(config.paths.uploads));
 app.use('/template-assets', express.static(config.paths.templates));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(webDist));
 
 app.use('/api', pagesRouter);
 app.use('/api', projectsRouter);
