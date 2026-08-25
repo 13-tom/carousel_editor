@@ -63,6 +63,12 @@ export default function App() {
     });
   }
 
+  function handleResize(key, width, height) {
+    updateSlide((slide) => {
+      slide.styles = { ...slide.styles, [key]: { ...slide.styles[key], width, height } };
+    });
+  }
+
   function handleStyle(key, patch) {
     updateSlide((slide) => {
       slide.styles = { ...slide.styles, [key]: { ...slide.styles[key], ...patch } };
@@ -123,6 +129,7 @@ export default function App() {
             onSelect={setSelected}
             onTextChange={handleTextChange}
             onMove={handleMove}
+            onResize={handleResize}
             onRequestUpload={requestUpload}
             registerPost={(fn) => (postToCanvasRef.current = fn)}
           />

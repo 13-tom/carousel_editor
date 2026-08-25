@@ -55,12 +55,21 @@ function readZipEntries(zipBuffer) {
   return { dcHtml: dcEntry.getData().toString('utf-8'), dcName: path.basename(dcEntry.entryName), slotState };
 }
 
+// A text label that sits next to an icon (an <svg>, in the same small row)
+// is chrome, not content — the "Swipe for more" cue and an @handle lockup
+// both follow this pattern. Locking these out means they never move or get
+// edited by accident.
+function isLockedChrome($, el) {
+  return $(el).parent().children('svg').length > 0;
+}
+
 function isTextLeaf($, el) {
   const $el = $(el);
   if ($el.children().length > 0) return false;
   if (!$el.text().trim()) return false;
   if ($el.hasClass('image-slot-label') || $el.hasClass('video-slot-label')) return false;
   if ($el.parents('[data-edit="text"]').length > 0) return false;
+  if (isLockedChrome($, el)) return false;
   return true;
 }
 

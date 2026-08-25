@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 const DISPLAY_WIDTH = 420;
 
-export default function EditorCanvas({ pageId, slideId, canvas, onSelect, onTextChange, onMove, onRequestUpload, registerPost }) {
+export default function EditorCanvas({ pageId, slideId, canvas, onSelect, onTextChange, onMove, onResize, onRequestUpload, registerPost }) {
   const iframeRef = useRef(null);
   const scale = DISPLAY_WIDTH / canvas.width;
   const displayHeight = canvas.height * scale;
@@ -27,6 +27,9 @@ export default function EditorCanvas({ pageId, slideId, canvas, onSelect, onText
         case 'move':
           onMove(msg.key, msg.x, msg.y);
           break;
+        case 'resize':
+          onResize(msg.key, msg.width, msg.height);
+          break;
         case 'request-image':
         case 'request-video':
           onRequestUpload(msg.key);
@@ -37,7 +40,7 @@ export default function EditorCanvas({ pageId, slideId, canvas, onSelect, onText
     }
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [onSelect, onTextChange, onMove, onRequestUpload]);
+  }, [onSelect, onTextChange, onMove, onResize, onRequestUpload]);
 
   return (
     <div className="canvas-wrapper" style={{ width: DISPLAY_WIDTH, height: displayHeight }}>

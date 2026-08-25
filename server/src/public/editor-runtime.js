@@ -22,9 +22,29 @@
     offsets[el.getAttribute('data-key')] = parseTranslate(el);
   });
 
+  // Images are fixed in place (only resizable, via the corner handle below)
+  // and replaceable — dragging to reposition is a text-only feature.
+  var MIN_SIZE = 40;
+
+  document.querySelectorAll('[data-edit="image"]').forEach(function (el) {
+    var handle = document.createElement('div');
+    handle.className = 'resize-handle';
+    handle.setAttribute('data-resize-for', el.getAttribute('data-key'));
+    el.appendChild(handle);
+  });
+
   var dragState = null;
+  var resizeState = null;
 
   document.addEventListener('pointerdown', function (e) {
+    var handle = e.target.closest('.resize-handle');
+    if (handle) {
+      var key = handle.getAttribute('data-resize-for');
+      var target = document.querySelector('[data-key="' + key + '"]');
+      var rect = target.getBoundingClientRect();
+      resizeState = { target: target, key: key, startX: e.clientX, startY: e.clientY, startW: rect.width, startH: rect.height };
+      return;
+    }
     var el = e.target.closest('[data-key]');
     if (!el) return;
     dragState = {
@@ -38,7 +58,15 @@
   });
 
   document.addEventListener('pointermove', function (e) {
+    if (resizeState) {
+      var w = Math.max(MIN_SIZE, resizeState.startW + (e.clientX - resizeState.startX));
+      var h = Math.max(MIN_SIZE, resizeState.startH + (e.clientY - resizeState.startY));
+      resizeState.target.style.width = w + 'px';
+      resizeState.target.style.height = h + 'px';
+      return;
+    }
     if (!dragState) return;
+    if (dragState.el.getAttribute('data-edit') !== 'text') return;
     var dx = e.clientX - dragState.startX;
     var dy = e.clientY - dragState.startY;
     if (!dragState.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
@@ -50,6 +78,12 @@
   });
 
   document.addEventListener('pointerup', function (e) {
+    if (resizeState) {
+      var rect = resizeState.target.getBoundingClientRect();
+      post({ type: 'resize', key: resizeState.key, width: Math.round(rect.width), height: Math.round(rect.height) });
+      resizeState = null;
+      return;
+    }
     if (!dragState) return;
     var el = dragState.el;
     var key = dragState.key;

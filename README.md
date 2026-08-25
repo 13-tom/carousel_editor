@@ -101,13 +101,31 @@ etc.). Any page can then switch to it by changing `theme` in its `page.json`.
 
 ## Editing controls
 
-- Click any text and type — it edits in place.
-- Click an image or video area to pick a replacement file from your computer.
-- Drag any element to reposition it.
-- Select a text element to get font-color and left/center/right alignment
-  controls in the toolbar.
+This is deliberately not a full design tool — it only exposes what's needed
+to reuse a template for a new post, nothing that would let you redesign it
+by accident:
 
-Edits autosave to `data/projects/<page-id>.json` on every change.
+- Click any text and type — it edits in place. Enter adds a line break, not
+  a new paragraph.
+- Select a text element to get font-color and left/center/right alignment
+  controls in the toolbar, and drag it to reposition it.
+- Click an image or video area to pick a replacement file from your computer.
+- Drag an image's corner handle to resize its frame (anchored from its
+  top-left corner). Images themselves aren't draggable — only resizable and
+  replaceable — so a layout can't drift out of place slide to slide.
+- There's no font-family control anywhere, on purpose.
+- Icon+label chrome the importer recognizes automatically — a "swipe for
+  more" cue, an @handle lockup — is excluded from editing entirely, so it
+  can't be nudged out of place by accident. (Anything else you want locked
+  the same way: remove its `data-edit`/`data-key` attributes in the slide's
+  HTML file.)
+
+Edits autosave to `data/projects/<page-id>.json` on every change — **the
+original template files under `templates/pages/` are never modified**, by
+editing or by exporting. Every render merges the template with that
+separate override file on the fly, so re-editing a page always starts from
+the same clean template, and a template can be reused by as many dated
+exports as you want without ever drifting.
 
 ## Export
 
