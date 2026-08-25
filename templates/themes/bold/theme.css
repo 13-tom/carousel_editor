@@ -1,0 +1,45 @@
+/* Theme: Bold — high contrast, big type, saturated background */
+.slide {
+  font-family: 'Arial Black', Arial, sans-serif;
+  background: #ff3b30;
+  color: #ffffff;
+}
+
+.slide .eyebrow {
+  font-size: 28px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffe8e6;
+  font-weight: 700;
+}
+
+.slide .headline {
+  font-size: 84px;
+  font-weight: 900;
+  line-height: 1.02;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.slide .body {
+  font-size: 38px;
+  line-height: 1.35;
+  color: #fff5f4;
+  font-weight: 600;
+}
+
+.slide .cta {
+  font-size: 34px;
+  font-weight: 800;
+  color: #ff3b30;
+  background: #ffffff;
+  display: inline-block;
+  padding: 20px 40px;
+  border-radius: 12px;
+}
+
+.slide .page-number {
+  font-size: 24px;
+  color: #ffd9d6;
+  font-weight: 700;
+}

@@ -1,0 +1,34 @@
+{
+  "_comment": "Local settings. Copy this file to config.local.json to override without touching git history — config.local.json is gitignored.",
+
+  "server": {
+    "port": 4310
+  },
+
+  "export": {
+    "mode": "local-folder",
+    "_mode_options": ["local-folder", "dropbox-api"],
+
+    "localFolder": {
+      "_comment": "Where exports land on disk. If dropboxPath is set and exists, files are ALSO copied there, organized as <dropboxPath>/<PageName>/Carousel/<YYYY-MM-DD>/. Leave dropboxPath empty to skip Dropbox entirely.",
+      "exportsDir": "./exports",
+      "dropboxPath": ""
+    },
+
+    "dropboxApi": {
+      "_comment": "Used only when export.mode = 'dropbox-api' (e.g. once this is hosted on a VPS without the Dropbox desktop client). Set DROPBOX_ACCESS_TOKEN as an environment variable instead of writing it here.",
+      "destinationRoot": "/CarouselEditor"
+    }
+  },
+
+  "render": {
+    "_comment": "Leave chromiumExecutablePath empty to use Playwright's own downloaded browser (normal setup after `npx playwright install chromium` in server/). Only set this if you need to point at a specific Chrome/Chromium binary.",
+    "chromiumExecutablePath": ""
+  },
+
+  "video": {
+    "_comment": "ffmpeg must be installed and on PATH (brew install ffmpeg / apt install ffmpeg), or point ffmpegPath at a binary directly.",
+    "ffmpegPath": "ffmpeg",
+    "loopSeconds": 6
+  }
+}

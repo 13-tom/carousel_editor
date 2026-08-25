@@ -1,0 +1,134 @@
+/* Layout: position/size of elements for demo-page's slide designs.
+   This is separate from theme.css so any theme (colors/fonts) can be
+   swapped onto this same structural layout. */
+
+.slide {
+  position: relative;
+  width: 1080px;
+  height: 1350px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.slide * {
+  box-sizing: border-box;
+}
+
+.page-number {
+  position: absolute;
+  top: 48px;
+  right: 56px;
+}
+
+/* ---- slide-1: hook ---- */
+.slide-title .eyebrow {
+  position: absolute;
+  top: 120px;
+  left: 72px;
+  right: 72px;
+}
+
+.slide-title .headline {
+  position: absolute;
+  top: 200px;
+  left: 72px;
+  right: 72px;
+}
+
+.slide-title .image-slot {
+  position: absolute;
+  left: 72px;
+  right: 72px;
+  bottom: 100px;
+  height: 520px;
+  border-radius: 24px;
+}
+
+/* ---- slide-2: content ---- */
+.slide-content .headline {
+  position: absolute;
+  top: 100px;
+  left: 72px;
+  right: 72px;
+  font-size: 56px;
+}
+
+.slide-content .image-slot {
+  position: absolute;
+  top: 300px;
+  left: 72px;
+  right: 72px;
+  height: 480px;
+  border-radius: 24px;
+}
+
+.slide-content .body {
+  position: absolute;
+  top: 830px;
+  left: 72px;
+  right: 72px;
+}
+
+/* ---- slide-3: CTA with looping video background ---- */
+.slide-cta .video-slot {
+  position: absolute;
+  inset: 0;
+}
+
+.slide-cta .video-slot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%);
+}
+
+.slide-cta .headline {
+  position: absolute;
+  top: 520px;
+  left: 72px;
+  right: 72px;
+  z-index: 2;
+  color: #ffffff;
+}
+
+.slide-cta .cta {
+  position: absolute;
+  bottom: 140px;
+  left: 72px;
+  z-index: 2;
+}
+
+/* Shared image/video placeholder chrome (editor + fallback only) */
+.image-slot {
+  background: #e3e1dc center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a8a8a;
+  font-size: 26px;
+  text-align: center;
+}
+
+.video-slot {
+  background: #1a1a1a;
+}
+
+.video-slot .bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-slot .video-slot-label {
+  position: relative;
+  z-index: 2;
+  color: #cccccc;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}

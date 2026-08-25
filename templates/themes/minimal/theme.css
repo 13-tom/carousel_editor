@@ -1,0 +1,43 @@
+/* Theme: Minimal — clean, lots of whitespace, dark text on light backgrounds */
+.slide {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: #f7f5f1;
+  color: #1a1a1a;
+}
+
+.slide .eyebrow {
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+  font-weight: 600;
+}
+
+.slide .headline {
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1.08;
+  color: #1a1a1a;
+}
+
+.slide .body {
+  font-size: 36px;
+  line-height: 1.4;
+  color: #333333;
+}
+
+.slide .cta {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #1a1a1a;
+  display: inline-block;
+  padding: 18px 36px;
+  border-radius: 999px;
+}
+
+.slide .page-number {
+  font-size: 24px;
+  color: #a0a0a0;
+  font-weight: 600;
+}

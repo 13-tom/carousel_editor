@@ -1,0 +1,11 @@
+{
+  "id": "demo-page",
+  "name": "Demo Page",
+  "theme": "minimal",
+  "canvas": { "width": 1080, "height": 1350 },
+  "slides": [
+    { "id": "slide-1", "file": "slides/slide-1.html", "label": "Hook" },
+    { "id": "slide-2", "file": "slides/slide-2.html", "label": "Content" },
+    { "id": "slide-3", "file": "slides/slide-3.html", "label": "CTA (video)", "hasVideo": true }
+  ]
+}

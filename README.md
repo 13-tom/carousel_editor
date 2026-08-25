@@ -1,1 +1,113 @@
-# carousel_editor
+# Carousel Editor
+
+A local, browser-based Canva-like editor for your Instagram carousel templates.
+Pick a page, edit its slides (text, images, looping video backgrounds, font
+color, alignment, position), then export as PNG/MP4 — optionally straight
+into your Dropbox folder. Runs entirely on your own machine; nothing is
+published anywhere.
+
+## How it's organized
+
+```
+templates/
+  themes/<theme-id>/theme.css      colors + typography, swappable per page
+  pages/<page-id>/
+    page.json                      page name, theme, canvas size, slide list
+    layout.css                     where things sit on this page's slides
+    slides/*.html                  slide structure + editable hooks
+
+server/     Express backend — renders slides, saves your edits, exports
+web/        Vite + React editor UI
+data/       your saved edits per page (gitignored)
+uploads/    images/videos you add from your computer (gitignored)
+exports/    exported PNG/MP4 output (gitignored)
+config/     config.json — Dropbox path, export mode, ffmpeg path
+```
+
+## Setup
+
+Requirements: Node.js 18+, and for video export, **ffmpeg** on your PATH
+(`brew install ffmpeg` on Mac, `apt install ffmpeg` on Linux/WSL, or
+download a build for Windows and add it to PATH).
+
+```bash
+npm run install:all   # installs server + web dependencies
+npx playwright install chromium --prefix server  # downloads the headless
+                                                   # browser used for PNG export
+npm run dev            # starts backend (port 4310) + editor UI (port 5173)
+```
+
+Open http://localhost:5173.
+
+## Adding your real templates
+
+This ships with one demo page (two slides + one video CTA slide) so you can
+see the whole flow working immediately. To add one of your real Instagram
+pages:
+
+1. Duplicate `templates/pages/demo-page` as `templates/pages/<your-page-id>`.
+2. Edit `page.json` — set `name`, `theme` (`minimal` or `bold`, or a new
+   theme you add under `templates/themes/`), canvas size, and the slide list.
+3. Replace the files in `slides/` with your actual slide markup. Any element
+   you want editable needs a `data-edit` + `data-key` attribute:
+   - `data-edit="text" data-key="headline"` — click to edit text inline.
+     Add `data-align="true"` / `data-color="true"` so the toolbar's
+     alignment/color controls apply to it (cosmetic marker only — the
+     toolbar currently applies to whatever text element is selected).
+   - `data-edit="image" data-key="heroImage"` on a div — click to upload
+     an image from your computer; it's applied as `background-image`.
+   - `data-edit="video" data-key="bgVideo"` wrapping a `<video>` — click to
+     upload a looping background video. Slides with a video background
+     export as MP4 instead of PNG (mark them with `"hasVideo": true` in
+     `page.json`).
+4. Adjust `layout.css` for exact positions/sizes (this is separate from
+   `theme.css` so the same layout can be reused across themes).
+
+**Sending me your actual designs:** the cleanest path is HTML/CSS — e.g. a
+Claude Design export, or any hand-coded HTML for your current slides. I can
+map that directly onto this `data-edit` structure. Canva doesn't export
+editable layered source, so that's a dead end; Figma would need an extra
+conversion step. HTML is the native format for a browser-based editor, so
+it needs the least translation.
+
+Adding a new **theme**: create `templates/themes/<id>/theme.css` (+ optional
+`meta.json` with a display name) using the same class names your layouts
+already reference (`.headline`, `.body`, `.eyebrow`, `.cta`, `.page-number`,
+etc.). Any page can then switch to it by changing `theme` in its `page.json`.
+
+## Editing controls
+
+- Click any text and type — it edits in place.
+- Click an image or video area to pick a replacement file from your computer.
+- Drag any element to reposition it.
+- Select a text element to get font-color and left/center/right alignment
+  controls in the toolbar.
+
+Edits autosave to `data/projects/<page-id>.json` on every change.
+
+## Export
+
+Click **Export carousel**. Each slide renders as PNG, except slides with a
+video background (marked `hasVideo` + one uploaded), which render as MP4 —
+the looping video with your text/graphics burned in on top.
+
+By default (`export.mode: "local-folder"` in `config/config.json`) files are
+written to `exports/<Page Name>/<YYYY-MM-DD>/`. If you also set
+`export.localFolder.dropboxPath` to your local Dropbox folder (e.g.
+`/Users/you/Dropbox`), exports are additionally copied to
+`<dropboxPath>/<Page Name>/Carousel/<YYYY-MM-DD>/` and your existing Dropbox
+desktop app syncs them automatically — no API keys needed.
+
+**Later, when hosting this on a VPS** (no Dropbox desktop client running),
+switch `export.mode` to `"dropbox-api"`, set `export.dropboxApi.destinationRoot`,
+create a Dropbox app at dropbox.com/developers to get an access token, and
+set it as the `DROPBOX_ACCESS_TOKEN` environment variable. No code changes
+needed — the export route already supports both paths.
+
+## Notes on video export
+
+MP4 export shells out to `ffmpeg` (path configurable via
+`config.video.ffmpegPath`, default assumes it's on your PATH) to loop the
+uploaded background video and overlay the slide's text/graphics for
+`config.video.loopSeconds` (default 6s). If ffmpeg isn't installed, PNG
+export still works fine — only video-background slides are affected.
