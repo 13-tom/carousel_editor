@@ -158,6 +158,10 @@ by accident:
   a new paragraph.
 - Select a text element to get font-color and left/center/right alignment
   controls in the toolbar, and drag it to reposition it.
+- The color picker is backed by a palette of swatches pulled straight from
+  that page's own theme/layout CSS and slide markup — the colors the
+  template actually uses, ranked by how often they appear, so a new post
+  stays on-brand with one click instead of eyeballing a hex code.
 - Click an image or video area to pick a replacement file from your computer.
 - Drag any of the 8 handles around an image/video (4 corners + 4 edges) to
   resize its frame from that side — the opposite side stays put, same as

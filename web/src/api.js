@@ -14,6 +14,7 @@ function withTopic(url, topic) {
 
 export const api = {
   listPages: () => fetch(`${BASE}/pages`).then(json),
+  getPageColors: (pageId) => fetch(`${BASE}/pages/${pageId}/colors`).then(json),
   listTopics: (pageId) => fetch(`${BASE}/projects/${pageId}/topics`).then(json),
   getProject: (pageId, topic) => fetch(withTopic(`${BASE}/projects/${pageId}`, topic)).then(json),
   saveProject: (pageId, project, topic) =>

@@ -21,6 +21,7 @@ export default function App() {
   const [slideId, setSlideId] = useState(null);
   const [selected, setSelected] = useState(null); // { key, editType }
   const [cropKey, setCropKey] = useState(null);
+  const [palette, setPalette] = useState([]);
   const fileInputRef = useRef(null);
   const pendingUploadKey = useRef(null);
   const pendingMediaRef = useRef(null);
@@ -31,6 +32,11 @@ export default function App() {
   }, []);
 
   const page = pageId ? pages.find((pg) => pg.id === pageId) : null;
+
+  useEffect(() => {
+    if (!pageId) return;
+    api.getPageColors(pageId).then((res) => setPalette(res.colors)).catch(() => setPalette([]));
+  }, [pageId]);
 
   useEffect(() => {
     if (!page || topic === undefined) return;
@@ -193,6 +199,7 @@ export default function App() {
           <Toolbar
             selected={selected}
             style={currentStyle}
+            palette={palette}
             cropActive={cropKey === selected?.key}
             onColor={(color) => {
               handleStyle(selected.key, { color });
