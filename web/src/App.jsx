@@ -216,6 +216,10 @@ export default function App() {
               handleStyle(selected.key, { textAlign });
               postToCanvasRef.current({ type: 'apply-style', key: selected.key, textAlign });
             }}
+            onBorder={(border) => {
+              handleStyle(selected.key, { border });
+              postToCanvasRef.current({ type: 'apply-style', key: selected.key, border });
+            }}
             onToggleCrop={() => toggleCrop(selected.key)}
             onZoom={(scale) => setCropZoom(selected.key, scale)}
           />

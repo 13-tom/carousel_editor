@@ -179,6 +179,13 @@ button, input { font-family: inherit; color: inherit; }
   cursor: pointer; font-size: 13px; font: inherit; transition: background-color 0.15s ease, color 0.15s ease;
 }
 .crop-toggle.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.media-tabs { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.media-tabs button {
+  border: none; background: var(--surface); color: var(--ink-muted); padding: 7px 16px; cursor: pointer;
+  font-size: 13px; font-weight: 600;
+}
+.media-tabs button:first-child { border-right: 1px solid var(--border); }
+.media-tabs button.active { background: var(--accent-soft); color: var(--accent); }
 .canvas-wrapper { box-shadow: var(--shadow-lg); overflow: hidden; border-radius: 4px; background: var(--surface); }
 
 /* ---------- Export panel ---------- */

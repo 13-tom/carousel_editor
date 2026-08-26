@@ -1,6 +1,14 @@
-export default function Toolbar({ selected, style, palette, cropActive, onColor, onAlign, onToggleCrop, onZoom }) {
+import { useEffect, useState } from 'react';
+
+export default function Toolbar({ selected, style, palette, cropActive, onColor, onAlign, onToggleCrop, onZoom, onBorder }) {
   const isText = selected?.editType === 'text';
   const isMedia = selected?.editType === 'image' || selected?.editType === 'video';
+  const [mediaTab, setMediaTab] = useState('image');
+  const border = style.border || {};
+
+  // A newly selected image/video always starts on the Image tab — otherwise
+  // switching slots could leave Border showing for a slot that has none.
+  useEffect(() => setMediaTab('image'), [selected?.key]);
 
   return (
     <div className="toolbar">
@@ -35,26 +43,58 @@ export default function Toolbar({ selected, style, palette, cropActive, onColor,
         </>
       )}
       {isMedia && (
-        <div className="toolbar-row">
-          <button className={`toolbar-item crop-toggle ${cropActive ? 'active' : ''}`} onClick={onToggleCrop}>
-            {cropActive ? 'Done cropping' : 'Crop'}
-          </button>
-          {cropActive ? (
-            <label className="toolbar-item">
-              Zoom
-              <input
-                type="range"
-                min="1"
-                max="3"
-                step="0.05"
-                value={style.crop?.scale || 1}
-                onChange={(e) => onZoom(parseFloat(e.target.value))}
-              />
-            </label>
-          ) : (
-            <span className="muted">Drag a corner/edge handle to resize. Click to replace, or Crop to reposition the {selected.editType} inside its frame.</span>
+        <>
+          <div className="toolbar-item media-tabs">
+            <button className={mediaTab === 'image' ? 'active' : ''} onClick={() => setMediaTab('image')}>Image</button>
+            <button className={mediaTab === 'border' ? 'active' : ''} onClick={() => setMediaTab('border')}>Border</button>
+          </div>
+          {mediaTab === 'image' && (
+            <div className="toolbar-row">
+              <button className={`toolbar-item crop-toggle ${cropActive ? 'active' : ''}`} onClick={onToggleCrop}>
+                {cropActive ? 'Done cropping' : 'Crop'}
+              </button>
+              {cropActive ? (
+                <label className="toolbar-item">
+                  Zoom
+                  <input
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="0.05"
+                    value={style.crop?.scale || 1}
+                    onChange={(e) => onZoom(parseFloat(e.target.value))}
+                  />
+                </label>
+              ) : (
+                <span className="muted">Drag a corner/edge handle to resize. Click to replace, or Crop to reposition the {selected.editType} inside its frame.</span>
+              )}
+            </div>
           )}
-        </div>
+          {mediaTab === 'border' && (
+            <div className="toolbar-row">
+              <label className="toolbar-item">
+                Width
+                <input
+                  type="range"
+                  min="0"
+                  max="30"
+                  step="1"
+                  value={border.width || 0}
+                  onChange={(e) => onBorder({ width: parseInt(e.target.value, 10), color: border.color || '#ffffff' })}
+                />
+              </label>
+              <label className="toolbar-item">
+                Color
+                <input
+                  type="color"
+                  value={border.color || '#ffffff'}
+                  onChange={(e) => onBorder({ width: border.width || 8, color: e.target.value })}
+                />
+              </label>
+              {!border.width && <span className="muted">Drag the width slider to add a frame.</span>}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

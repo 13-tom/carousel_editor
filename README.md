@@ -171,6 +171,11 @@ by accident:
   or video *within* its frame (drag to pan, slider to zoom) without
   changing the frame's size or position — for fixing a bad crop on an
   upload, not for moving the frame itself. Click **Done cropping** to exit.
+- Selecting an image or video splits its toolbar into two tabs — **Image**
+  (crop/zoom, as above) and **Border** (a width slider + color picker for a
+  frame around that slot). They're independent so widening a photo's border
+  never touches its crop, and vice versa. Width starts at 0 (no border);
+  dragging the slider up is what turns it on, defaulting to white.
 - There's no font-family control anywhere, on purpose.
 - Icon+label chrome the importer recognizes automatically — a "swipe for
   more" cue, an @handle lockup — is excluded from editing entirely, so it

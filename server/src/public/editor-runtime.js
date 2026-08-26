@@ -256,6 +256,7 @@
         if (!el) break;
         if (msg.color) el.style.color = msg.color;
         if (msg.textAlign) el.style.textAlign = msg.textAlign;
+        if (msg.border) el.style.border = msg.border.width > 0 ? msg.border.width + 'px solid ' + msg.border.color : 'none';
         break;
       case 'set-image':
         if (!el) break;
