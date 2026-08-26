@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api.js';
+import Brand from './Brand.jsx';
+import Brackets from './Brackets.jsx';
+import ThemeToggle from './ThemeToggle.jsx';
 
 export default function TopicPicker({ page, onConfirm, onBack }) {
   const [topics, setTopics] = useState(null);
@@ -37,6 +40,10 @@ export default function TopicPicker({ page, onConfirm, onBack }) {
 
   return (
     <div className="topic-picker">
+      <div className="top-bar">
+        <Brand />
+        <ThemeToggle />
+      </div>
       <button className="link-btn" onClick={onBack}>← Pages</button>
       <h1>{page.name}</h1>
       <p className="muted">Pick a carousel to keep working on, or start a new one.</p>
@@ -47,6 +54,7 @@ export default function TopicPicker({ page, onConfirm, onBack }) {
         <div className="topic-list">
           {topics.topics.map((t) => (
             <button key={t.slug} className="topic-card" onClick={() => onConfirm(t.name, [])}>
+              <Brackets />
               <div className="topic-card-name">{t.name}</div>
               <div className="topic-card-meta">Last edited {new Date(t.updatedAt).toLocaleDateString()}</div>
             </button>
@@ -56,6 +64,7 @@ export default function TopicPicker({ page, onConfirm, onBack }) {
 
       {topics?.hasUntitled && (
         <button className="topic-card topic-card-untitled" onClick={() => onConfirm(null, [])}>
+          <Brackets />
           <div className="topic-card-name">Untitled (before topics existed)</div>
         </button>
       )}

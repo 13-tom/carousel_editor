@@ -7,6 +7,8 @@ import EditorCanvas from './components/EditorCanvas.jsx';
 import Toolbar from './components/Toolbar.jsx';
 import MediaLibrary from './components/MediaLibrary.jsx';
 import ExportPanel from './components/ExportPanel.jsx';
+import Brand from './components/Brand.jsx';
+import ThemeToggle from './components/ThemeToggle.jsx';
 
 function withSlideDefaults(project, slideId) {
   if (project.slides[slideId]) return project;
@@ -180,10 +182,15 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <button className="link-btn" onClick={backToPages}>← Pages</button>
-        <h1>{page.name}</h1>
-        {topic && <span className="theme-badge">{topic}</span>}
-        <span className="theme-badge">{page.theme}</span>
+        <div className="app-header-left">
+          <Brand />
+          <span className="header-divider" />
+          <button className="link-btn" onClick={backToPages}>← Pages</button>
+          <h1>{page.name}</h1>
+          {topic && <span className="theme-badge">{topic}</span>}
+          <span className="theme-badge">{page.theme}</span>
+        </div>
+        <ThemeToggle />
       </header>
       <div className="app-body">
         <SlideThumbnails

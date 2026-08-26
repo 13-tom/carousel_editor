@@ -1,3 +1,5 @@
+import Brackets from './Brackets.jsx';
+
 export default function SlideThumbnails({ slides, currentId, onSelect }) {
   return (
     <div className="slide-list">
@@ -7,6 +9,7 @@ export default function SlideThumbnails({ slides, currentId, onSelect }) {
           className={`slide-thumb ${s.id === currentId ? 'active' : ''}`}
           onClick={() => onSelect(s.id)}
         >
+          {s.id === currentId && <Brackets />}
           <span className="slide-thumb-num">{i + 1}</span>
           <span>{s.label || s.id}</span>
           {s.hasVideo && <span className="video-badge">video</span>}

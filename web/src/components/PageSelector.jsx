@@ -1,5 +1,8 @@
 import { useRef, useState } from 'react';
 import { api } from '../api.js';
+import Brand from './Brand.jsx';
+import Brackets from './Brackets.jsx';
+import ThemeToggle from './ThemeToggle.jsx';
 
 export default function PageSelector({ pages, onSelect, onImported }) {
   const fileInputRef = useRef(null);
@@ -22,10 +25,14 @@ export default function PageSelector({ pages, onSelect, onImported }) {
 
   return (
     <div className="page-selector">
+      <div className="top-bar">
+        <Brand />
+        <ThemeToggle />
+      </div>
       <div className="page-selector-header">
         <h1>Choose a page to edit</h1>
-        <button className="primary-btn small" disabled={status?.state === 'loading'} onClick={() => fileInputRef.current?.click()}>
-          {status?.state === 'loading' ? 'Importing…' : '+ Import template (.zip)'}
+        <button className="ghost-btn" disabled={status?.state === 'loading'} onClick={() => fileInputRef.current?.click()}>
+          {status?.state === 'loading' ? 'Importing…' : '+ Import template'}
         </button>
       </div>
       {status?.state === 'error' && <div className="export-status error">Import failed: {status.message}</div>}
@@ -33,6 +40,7 @@ export default function PageSelector({ pages, onSelect, onImported }) {
       <div className="page-grid">
         {pages.map((p) => (
           <button key={p.id} className="page-card" onClick={() => onSelect(p.id)}>
+            <Brackets />
             <div className="page-card-name">{p.name}</div>
             <div className="page-card-meta">{p.theme} theme · {p.slides.length} slides</div>
           </button>
