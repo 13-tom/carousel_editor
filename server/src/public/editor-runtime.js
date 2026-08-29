@@ -254,7 +254,26 @@
     switch (msg.type) {
       case 'apply-style':
         if (!el) break;
-        if (msg.color) el.style.color = msg.color;
+        if (msg.color) {
+          // A highlighted word/phrase inside the currently-edited text
+          // block colors just that selection (like Canva); anything else
+          // — nothing selected, or the selection isn't even inside this
+          // element — falls back to coloring the whole block, same as
+          // before. foreColor needs styleWithCSS on or it emits legacy
+          // <font color> tags, which the server-side sanitizer (only
+          // <br> and <span style="color:..."> survive) would strip.
+          var sel = window.getSelection();
+          var selectionInEl = el.getAttribute('contenteditable') === 'true' && sel && !sel.isCollapsed &&
+            el.contains(sel.anchorNode) && el.contains(sel.focusNode);
+          if (selectionInEl) {
+            document.execCommand('styleWithCSS', false, true);
+            document.execCommand('foreColor', false, msg.color);
+            post({ type: 'text-change', key: el.getAttribute('data-key'), html: el.innerHTML });
+          } else {
+            el.style.color = msg.color;
+            post({ type: 'style-changed', key: el.getAttribute('data-key'), color: msg.color });
+          }
+        }
         if (msg.textAlign) el.style.textAlign = msg.textAlign;
         if (msg.border) el.style.border = msg.border.width > 0 ? msg.border.width + 'px solid ' + msg.border.color : 'none';
         break;

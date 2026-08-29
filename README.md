@@ -162,6 +162,11 @@ by accident:
   that page's own theme/layout CSS and slide markup — the colors the
   template actually uses, ranked by how often they appear, so a new post
   stays on-brand with one click instead of eyeballing a hex code.
+- Highlight a word or phrase before clicking a swatch to color just that
+  selection, same as Canva; click a swatch with nothing highlighted to color
+  the whole text block instead. (The free-form color wheel is whole-block
+  only — opening it hands focus to a native OS picker, which loses whatever
+  was highlighted first.)
 - Click an image or video area to pick a replacement file from your computer.
 - Drag any of the 8 handles around an image/video (4 corners + 4 edges) to
   resize its frame from that side — the opposite side stays put, same as

@@ -209,7 +209,13 @@ export default function App() {
             palette={palette}
             cropActive={cropKey === selected?.key}
             onColor={(color) => {
-              handleStyle(selected.key, { color });
+              // Whether this colors the whole block or just a highlighted
+              // selection is a DOM fact only the iframe can see (is there a
+              // live text selection right now?) — it reports back via
+              // 'style-changed' (whole block) or 'text-change' (a
+              // <span> around just the selection), and either one is what
+              // actually gets persisted, so we don't persist a whole-block
+              // override here that a partial selection would contradict.
               postToCanvasRef.current({ type: 'apply-style', key: selected.key, color });
             }}
             onAlign={(textAlign) => {
@@ -233,6 +239,7 @@ export default function App() {
             onMove={handleMove}
             onResize={handleResize}
             onCrop={handleCrop}
+            onStyleChange={handleStyle}
             onRequestUpload={requestUpload}
             registerPost={(fn) => (postToCanvasRef.current = fn)}
           />

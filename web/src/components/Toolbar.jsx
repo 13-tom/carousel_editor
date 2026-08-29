@@ -34,12 +34,20 @@ export default function Toolbar({ selected, style, palette, cropActive, onColor,
                   className={`palette-swatch ${style.color === color ? 'active' : ''}`}
                   style={{ background: color }}
                   title={color}
+                  // A plain click first focuses this button, which blurs
+                  // the canvas's contenteditable and collapses whatever
+                  // text was highlighted — losing the selection the color
+                  // is supposed to apply to. Suppressing that default
+                  // focus-steal on mousedown is what lets a mid-word
+                  // selection survive long enough for onClick's apply-style
+                  // message to reach it still intact.
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => onColor(color)}
                 />
               ))}
             </div>
           )}
-          <span className="muted">Drag text on the canvas to reposition it.</span>
+          <span className="muted">Highlight a word first to color just that word, or click a swatch with nothing selected to color the whole block. Drag text on the canvas to reposition it.</span>
         </>
       )}
       {isMedia && (

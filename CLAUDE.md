@@ -70,6 +70,18 @@ Vite, which does hot-reload on save.
   context (`frame.evaluate`) or navigating straight to
   `/api/render/<pageId>/<slideId>?mode=editor` instead of clicking through
   the scaled parent page.
+- Clicking a toolbar button outside the iframe blurs whatever's
+  `contenteditable` inside it, which collapses the text selection — so a
+  color swatch that's meant to act on a highlighted word (not the whole
+  block) must call `e.preventDefault()` in `onMouseDown` (not `onClick`) to
+  stop the browser's default focus-steal before it happens. `onClick` still
+  fires normally afterward.
+- In cheerio/htmlparser2, `<script>` and `<style>` nodes get their own
+  `node.type` (`'script'`/`'style'`), not the generic `'tag'` — a sanitizer
+  that walks the tree checking `node.type !== 'tag'` to skip non-elements
+  will silently let scripts through untouched. Check for those two types
+  explicitly and remove them outright (`renderEngine.js`'s
+  `sanitizeInlineHtml`).
 
 ## Conventions
 
